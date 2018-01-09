@@ -36,7 +36,7 @@ def main(dir, dest_dir, resize=100):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parse Image resize')
-    parser.add_argument('--resize', help='Resize image size, the size unit is kilobytes')
+    parser.add_argument('--resize', help='Resize image file size, the size unit is kilobytes')
     parser.add_argument('--sourcedir', help='Resize images directory path')
     parser.add_argument('--resultdir', help='Result images directory path')
     FLAGS, unparsed = parser.parse_known_args()
