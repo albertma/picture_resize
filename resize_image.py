@@ -4,14 +4,15 @@ import os
 import argparse
 import math
 
-def calc_width(current_image_size, current_file_size, target_file_size):
 
+def calc_width(current_image_size, current_file_size, target_file_size):
     if current_file_size <= target_file_size:
         return None
     else:
-        ratio = math.sqrt(target_file_size / current_file_size)
+        ratio = math.sqrt(target_file_size / float(current_file_size))
         ratio_width = int(current_image_size[0] * ratio)
         return ratio_width
+
 
 def resize_image(file_path, dest_path, file_size=100):
     try:
@@ -19,10 +20,25 @@ def resize_image(file_path, dest_path, file_size=100):
             result_width = calc_width(im.size, os.path.getsize(file_path), file_size * 1024)
             if not result_width is None:
                 im = resizeimage.resize_width(im, result_width, Image.ANTIALIAS)
-            im.save(dest_path, 'JPEG')
+            if not im is None:
+                if im.mode == 'RGBA':
+                    im.save(dest_path)
+                else:
+                    im.save(dest_path, 'JPEG')
 
     except IOError as err:
         print("source file: " + file_path + " is not image file.")
+
+
+def copy_filename(src_filename, index_name):
+    if '.png' in src_filename:
+        result_name = index_name + '.png'
+    elif '.bmp' in src_filename:
+        result_name = index_name + '.bmp'
+    else:
+        result_name = index_name + '.jpg'
+    return result_name
+
 
 def main(dir, dest_dir, resize=100):
     list_files = os.listdir(dir)
@@ -31,8 +47,10 @@ def main(dir, dest_dir, resize=100):
         index = file_name.find('.')
         if index != -1 or index != 0:
             name = file_name[:index]
-            dest_path = os.path.join(dest_dir, name + ".jpg")
-            resize_image(source_path, dest_path, file_size = resize)
+            result_name = copy_filename(file_name, name)
+            dest_path = os.path.join(dest_dir, result_name)
+            resize_image(source_path, dest_path, file_size=resize)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parse Image resize')
@@ -46,4 +64,4 @@ if __name__ == '__main__':
     if resize is None or work_dir is None or result_dir is None:
         parser.print_help()
     else:
-        main(dir = work_dir, dest_dir = result_dir, resize=100)
+        main(dir=work_dir, dest_dir=result_dir, resize=100)
